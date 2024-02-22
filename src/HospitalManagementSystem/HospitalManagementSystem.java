@@ -1,5 +1,6 @@
 package HospitalManagementSystem;
 import java.sql.*;
+import java.time.*;
 import java.util.Scanner;
 
 public class HospitalManagementSystem {
@@ -65,15 +66,26 @@ public class HospitalManagementSystem {
     }
     public static void bookAppointment(Patient patient, Doctor doctor, Connection connection, Scanner scanner) {
         boolean docAvail = false;
+        boolean dateCheck = false;
         patient.viewPatients();
         doctor.viewDoctors();
-        while(!docAvail) {
+        while(!docAvail || !dateCheck) {
             System.out.print("Enter Patient Id: ");
             int patientId = scanner.nextInt();
             System.out.print("Enter Doctor Id: ");
             int doctorId = scanner.nextInt();
             System.out.print("Enter appointment date(YYYY-MM-DD): ");
             String appointmentDate = scanner.next();
+            LocalDate today = LocalDate.now();
+            LocalDate pastDate = LocalDate.parse(appointmentDate);
+            int compareValue = today.compareTo(pastDate);
+            if(compareValue==0) {
+                dateCheck = true;
+            }
+            else {
+                System.out.println("Enter a valid date!!!");
+                dateCheck = false;
+            }
 
             if (checkDoctorAvailability(doctorId, appointmentDate, connection)) {
                 if (patient.getPatientById(patientId) && doctor.getDoctorById(doctorId)) {
@@ -84,7 +96,12 @@ public class HospitalManagementSystem {
                         preparedStatement.setInt(2, doctorId);
                         preparedStatement.setString(3, appointmentDate);
                         int rowsAffected = preparedStatement.executeUpdate();
-                        if (rowsAffected > 0) {
+                        if (rowsAffected > 0 && compareValue!=0) {
+                            System.out.println("Failed to book appointment!!");
+                            docAvail = true;
+                            continue;
+                        }
+                        else if (rowsAffected > 0 && compareValue==0) {
                             System.out.println("Appointment Booked!!");
                             docAvail = true;
                             continue;
