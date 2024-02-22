@@ -98,7 +98,7 @@ public class HospitalManagementSystem {
                     System.out.println("Please try again with valid data!!");
                 }
             } else {
-                System.out.print("Doctor is not available on this date!!");
+                System.out.println("Doctor is not available on this date!!");
                 System.out.println("Please try again with valid data!!");
 
             }
