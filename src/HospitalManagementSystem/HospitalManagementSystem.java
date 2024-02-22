@@ -33,23 +33,23 @@ public class HospitalManagementSystem {
                     case 1:
                         //Add Patients
                         patient.addPatient();
-                        return;
+                        break;
 
                     case 2:
                         //View Patients
                         patient.viewPatients();
-                        return;
+                        break;
 
                     case 3:
                         //View Doctors
                         doctor.viewDoctors();
-                        return;
+                        break;
 
                     case 4:
                         //Book Appointments
 
                         bookAppointment(patient, doctor, connection, scanner);
-                        return;
+                        break;
 
                     case 5:
                         return;
@@ -79,7 +79,7 @@ public class HospitalManagementSystem {
             LocalDate today = LocalDate.now();
             LocalDate pastDate = LocalDate.parse(appointmentDate);
             int compareValue = today.compareTo(pastDate);
-            if(compareValue==0) {
+            if(compareValue<0) {
                 dateCheck = true;
             }
             else {
@@ -96,14 +96,14 @@ public class HospitalManagementSystem {
                         preparedStatement.setInt(2, doctorId);
                         preparedStatement.setString(3, appointmentDate);
                         int rowsAffected = preparedStatement.executeUpdate();
-                        if (rowsAffected > 0 && compareValue!=0) {
-                            System.out.println("Failed to book appointment!!");
+                        if (rowsAffected > 0 && compareValue<0) {
+                            System.out.println("Appointment Booked!!");
                             docAvail = true;
                             continue;
                         }
-                        else if (rowsAffected > 0 && compareValue==0) {
-                            System.out.println("Appointment Booked!!");
-                            docAvail = true;
+                        else if (rowsAffected < 0 || compareValue==0) {
+                            System.out.println("Failed to book appointment!!");
+                            docAvail = false;
                             continue;
                         }
                     } catch (SQLException e) {
